@@ -1,0 +1,97 @@
+﻿<style>
+    .table-borderless tbody + tbody, .table-borderless td, .table-borderless th, .table-borderless thead th {
+        border: 0;
+        vertical-align: middle;
+        font-size: smaller;
+    }
+
+    .table-borderless tbody + tbody, .table-borderless td, .table-borderless th, .table-borderless thead th {
+        border: 0;
+        padding: 5px;
+    }
+
+    .card-title {
+        float: none;
+        font-size: 1.1rem;
+        font-weight: 400;
+        margin: 0;
+        text-align: center;
+    }
+
+    .form-control:disabled, .form-control[readonly] {
+        background-color: white;
+        opacity: 1;
+        text-align: center;
+    }
+</style>
+<div class="col-12">
+    <div class="card bg-success ">
+        <div class="card-header" >
+            <h3 class="card-title" id="txtTitle"></h3>
+        </div>
+        <div class="card-body">
+            <input id="input" class="form-control form-control-lg" type="text" placeholder="">
+        </div>
+    </div>
+</div>
+<div class="col-12">
+    <table class="table" style="font-size:small;">
+        <tr>
+            <td style="width: 30%;">
+                Người thực hiện
+            </td>
+            <td style="width: 70%;">
+                <input type="text" id="txtNguoithuchien" class="form-control" readonly="readonly">
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 30%;">
+                Vị trí
+            </td>
+            <td style="width: 70%;">
+                <input type="text" id="txtVitri" class="form-control" readonly="readonly">
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 30%;">
+                Số lượng thay
+            </td>
+            <td style="width: 70%;">
+                <input type="text" id="txtSolanbip" class="form-control" readonly="readonly">
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 30%;">
+                Vật tư thu về
+            </td>
+            <td style="width: 70%;">
+                <input type="text" id="txtVattuthuve" class="form-control" readonly="readonly">
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 30%;">
+                Vật tư xuất ra
+            </td>
+            <td style="width: 70%;">
+                <input type="text" id="txtVattuxuatra" class="form-control" readonly="readonly">
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 30%;">
+                Số lượng xuất
+            </td>
+            <td style="width: 70%;">
+                <input type="text" id="txtSoluongxuat" class="form-control" readonly="readonly">
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 30%;">
+                Lot No
+            </td>
+            <td style="width: 70%;">
+                <input type="text" id="txtLotno" class="form-control" readonly="readonly">
+        </tr>
+    </table>
+</div>
+
+<script src="~/script/xuatlinepd2.js"></script>
