@@ -98,7 +98,7 @@ namespace BCDAUMO.Controllers
             {
                 string[] text = vattuthuve.Split(';');
                 string tenvattuthuve = text[0].Trim();
-                var dulieu = await _context.DataRules.Where(x => x.BarcodeTen.Contains(tenvattuthuve)).FirstOrDefaultAsync();
+                var dulieu = await _context.DataRules.Where(x => x.BarcodeTen == tenvattuthuve).FirstOrDefaultAsync();
                 MyStringStorage.ten_vattuthuve = dulieu.Ten.ToString();
                 MyStringStorage.ma_vattuthuve = tenvattuthuve;
                 var dulieu2 = await _context.TonKhoPas.Where(x => (x.Ten == dulieu.Ten && x.GhiChu == "2")).FirstOrDefaultAsync();

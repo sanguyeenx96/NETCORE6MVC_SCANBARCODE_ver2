@@ -2,6 +2,11 @@ window.onload = function () {
     $("#input").focus();
 };
 $(document).ready(function () {
+    var qmnv = new Audio("/audio/quetmanhanvien.wav");
+    var loiketnoi = new Audio("/audio/loiketnoi.wav");
+
+    qmnv.play();
+
     var step = 1;
 
     var ten_model = "";
@@ -38,6 +43,8 @@ $(document).ready(function () {
                     data: { id: inputValue },
                     success: function (result) {
                         if (result.success) {
+                            var qmvt = new Audio("/audio/quetmavitri.wav");
+                            qmvt.play();
                             titleElement.innerHTML =
                                 "<i class='fa fa-wifi fa-fw' aria-hidden='true'></i> QUÉT MÃ VỊ TRÍ ";
                             $("#txtNguoithuchien").val(
@@ -47,16 +54,17 @@ $(document).ready(function () {
                             $("#input").focus();
                             step = 2;
                         } else {
-                            alert("Không có mã nhân viên " + inputValue);
+                            var smnv = new Audio("/audio/saimanv.wav");
+                            smnv.play();
+                            Swal.fire("Sai mã nhân viên!", inputValue, "error");
                             $("#input").val("");
                             $("#input").focus();
                             step = 1;
                         }
                     },
                     error: function () {
-                        alert(
-                            "Không kết nối được tới máy chủ, kiểm tra lại kết nối và thử lại!"
-                        );
+                        loiketnoi.play();
+                        Swal.fire("Lỗi kêt nối máy chủ!", "", "error");
                         $("#input").val("");
                         $("#input").focus();
                         step = 1;
@@ -70,6 +78,10 @@ $(document).ready(function () {
                     data: { vitri: inputValue },
                     success: function (result) {
                         if (result.success) {
+                            var qmvttv = new Audio(
+                                "/audio/quetmavattuthuve.wav"
+                            );
+                            qmvttv.play();
                             console.log("Thông tin vị trí :", result.data);
                             ten_model = result.data[0].model;
                             ten_cell = result.data[0].cell;
@@ -86,17 +98,21 @@ $(document).ready(function () {
                             $("#input").focus();
                             step = 3;
                         } else {
-                            alert(
-                                "Không tìm thấy thông tin vị trí " + inputValue
-                            );
+                            var smvt = new Audio("/audio/saimavitri.wav");
+                            smvt.play();
+                            Swal.fire("Sai mã vị trí!", inputValue, "error");
                             $("#input").val("");
                             $("#input").focus();
                             step = 2;
                         }
                     },
                     error: function () {
-                        alert(
-                            "Không kết nối được tới máy chủ, kiểm tra lại kết nối và thử lại!"
+                        var sddmvt = new Audio("/audio/saidinhdangmavitri.wav");
+                        sddmvt.play();
+                        Swal.fire(
+                            "Sai định dạng mã vị trí",
+                            inputValue,
+                            "error"
                         );
                         $("#input").val("");
                         $("#input").focus();
@@ -139,6 +155,11 @@ $(document).ready(function () {
                                 },
                                 success: function (result) {
                                     if (result.success) {
+                                        var qmvtxr = new Audio(
+                                            "/audio/quetmavattuxuatra.wav"
+                                        );
+                                        qmvtxr.play();
+
                                         console.log(
                                             "Đã cập nhật trạng thái bảng Layout tại vị trí thành OK :",
                                             result.data
@@ -165,6 +186,11 @@ $(document).ready(function () {
                                         $("#input").focus();
                                         step = 4;
                                     } else {
+                                        var svttv = new Audio(
+                                            "/audio/saivattuthuve.wav"
+                                        );
+                                        svttv.play();
+
                                         $.ajax({
                                             //CẬP NHẬT TRẠNG THÁI NG CHO LAYOUT
                                             url: "/XuatLine/updateStatus",
@@ -183,16 +209,12 @@ $(document).ready(function () {
                                                         result.data
                                                     );
                                                 } else {
-                                                    alert(
-                                                        "Không cập nhật được bảng Layout, kiểm tra lại dữ liệu!"
-                                                    );
+                                                    loiketnoi.play();
                                                 }
                                                 step = 3;
                                             },
                                             error: function () {
-                                                alert(
-                                                    "Không kết nối được tới máy chủ, kiểm tra lại kết nối và thử lại!"
-                                                );
+                                                loiketnoi.play();
                                                 $("#input").val("");
                                                 $("#input").focus();
                                                 step = 3;
@@ -233,16 +255,16 @@ $(document).ready(function () {
                                                 step = 3;
                                             },
                                             error: function () {
-                                                alert(
-                                                    "Không kết nối được tới máy chủ, kiểm tra lại kết nối và thử lại!"
-                                                );
+                                                loiketnoi.play();
                                                 $("#input").val("");
                                                 $("#input").focus();
                                                 step = 3;
                                             },
                                         });
-                                        alert(
-                                            "Sai mã vật tư thu về - Mã vật tư thu về và tại bảng layout không trùng!"
+                                        Swal.fire(
+                                            "Sai mã vật tư thu về!",
+                                            inputValue,
+                                            "error"
                                         );
                                         $("#input").val("");
                                         $("#input").focus();
@@ -250,9 +272,13 @@ $(document).ready(function () {
                                     }
                                 },
                                 error: function () {
-                                    alert(
-                                        "Không kết nối được tới máy chủ, kiểm tra lại kết nối và thử lại!"
+                                    loiketnoi.play();
+                                    Swal.fire(
+                                        "Lỗi kêt nối máy chủ!",
+                                        "",
+                                        "error"
                                     );
+
                                     $("#input").val("");
                                     $("#input").focus();
                                     step = 3;
@@ -277,15 +303,21 @@ $(document).ready(function () {
                                             result.data
                                         );
                                     } else {
-                                        alert(
-                                            "Không cập nhật được bảng Layout, kiểm tra lại dữ liệu!"
+                                        loiketnoi.play();
+                                        Swal.fire(
+                                            "Lỗi kêt nối máy chủ!",
+                                            "",
+                                            "error"
                                         );
                                     }
                                     step = 3;
                                 },
                                 error: function () {
-                                    alert(
-                                        "Không kết nối được tới máy chủ, kiểm tra lại kết nối và thử lại!"
+                                    loiketnoi.play();
+                                    Swal.fire(
+                                        "Lỗi kêt nối máy chủ!",
+                                        "",
+                                        "error"
                                     );
                                     $("#input").val("");
                                     $("#input").focus();
@@ -327,16 +359,23 @@ $(document).ready(function () {
                                     step = 3;
                                 },
                                 error: function () {
-                                    alert(
-                                        "Không kết nối được tới máy chủ, kiểm tra lại kết nối và thử lại!"
+                                    loiketnoi.play();
+                                    Swal.fire(
+                                        "Lỗi kêt nối máy chủ!",
+                                        "",
+                                        "error"
                                     );
                                     $("#input").val("");
                                     $("#input").focus();
                                     step = 3;
                                 },
                             });
-                            alert(
-                                "Sai mã vật tư thu về - Mã vật tư thu về và tại bảng layout không trùng!"
+                            var svttv = new Audio("/audio/saivattuthuve.wav");
+                            svttv.play();
+                            Swal.fire(
+                                "Sai mã vật tư thu về!",
+                                inputValue,
+                                "error"
                             );
                             $("#input").val("");
                             $("#input").focus();
@@ -344,9 +383,8 @@ $(document).ready(function () {
                         }
                     },
                     error: function () {
-                        alert(
-                            "Không kết nối được tới máy chủ, kiểm tra lại kết nối và thử lại!"
-                        );
+                        loiketnoi.play();
+                        Swal.fire("Lỗi kêt nối máy chủ!", "", "error");
                         $("#input").val("");
                         $("#input").focus();
                         step = 3;
@@ -376,9 +414,9 @@ $(document).ready(function () {
                         if (result.success) {
                             console.log(result.data);
                             if (result.data.mode == "NG") {
-                                alert(
-                                    "Sai mã vật tư phát ra - Mã vật tư thu về và phát ra không trùng!"
-                                );
+                                var smxr = new Audio("/audio/saimaxuatra.wav");
+                                smxr.play();
+
                                 $("#input").val("");
                                 $("#input").focus();
                                 step = 4;
@@ -388,6 +426,10 @@ $(document).ready(function () {
                                 $("#txtVattuxuatra").val(tenvattuphatra);
                                 solanbipXuatra++;
                                 if (solanbipXuatra < solancanbip) {
+                                    var qmvtxr = new Audio(
+                                        "/audio/quetmavattuxuatra.wav"
+                                    );
+                                    qmvtxr.play();
                                     $("#txtVattuxuatra").css({
                                         background: "orange",
                                     });
@@ -398,6 +440,11 @@ $(document).ready(function () {
                                     step = 3;
                                 }
                                 if (solanbipXuatra == solancanbip) {
+                                    var qmht = new Audio(
+                                        "/audio/quetmahoanthanh.wav"
+                                    );
+                                    qmht.play();
+
                                     $("#txtVattuxuatra").css({
                                         background: "green",
                                         color: "white",
@@ -412,9 +459,8 @@ $(document).ready(function () {
                         }
                     },
                     error: function () {
-                        alert(
-                            "Không kết nối được tới máy chủ, kiểm tra lại kết nối và thử lại!"
-                        );
+                        loiketnoi.play();
+                        Swal.fire("Lỗi kêt nối máy chủ!", "", "error");
                         $("#input").val("");
                         $("#input").focus();
                         step = 4;
@@ -428,19 +474,27 @@ $(document).ready(function () {
                         url: "/XuatLine/Final",
                         type: "POST",
                         success: function () {
-                            alert("DONE");
-                            window.location.reload();
+                            var tc = new Audio("/audio/thanhcong.wav");
+                            tc.play();
+                            Swal.fire("Thành công!", "", "success").then(
+                                function () {
+                                    window.location.reload();
+                                }
+                            );
                         },
                         error: function () {
-                            alert(
-                                "Không kết nối được tới máy chủ, kiểm tra lại kết nối và thử lại!"
-                            );
+                            loiketnoi.play();
+                            Swal.fire("Lỗi kêt nối máy chủ!", "", "error");
                             $("#input").val("");
                             $("#input").focus();
                             step = 5;
                         },
                     });
                 } else {
+                    var smht = new Audio("/audio/saima.wav");
+                    smht.play();
+                    Swal.fire("Sai mã hoàn thành!", inputValue, "error");
+
                     $("#input").val("");
                     $("#input").focus();
                     step = 5;
