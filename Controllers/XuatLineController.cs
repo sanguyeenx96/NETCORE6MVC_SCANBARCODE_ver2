@@ -118,7 +118,7 @@ namespace BCDAUMO.Controllers
                 {
                     string tenvattuthuve = text[0].Trim();
 
-                    var dulieu = await _context.DataRules.Where(x => x.Ten == tenvattuthuve).FirstOrDefaultAsync();
+                    var dulieu = await _context.DataRules.Where(x => x.BarcodeTen == tenvattuthuve).FirstOrDefaultAsync();
                     if (ten == dulieu.Ten.ToString())
                     {
                         MyStringStorage.ten_vattuthuve = dulieu.Ten.ToString();
