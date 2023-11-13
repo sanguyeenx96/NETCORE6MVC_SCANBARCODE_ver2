@@ -1,6 +1,7 @@
 ﻿using BCDAUMO.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace BCDAUMO.Controllers
 {
@@ -23,6 +24,7 @@ namespace BCDAUMO.Controllers
             public static string? st_model { get; set; }
             public static string? st_cell { get; set; }
             public static string? st_station { get; set; }
+            public static string? ten { get; set; }
             public static string? st_thoigianphatsinhloi { get; set; }
             public static string? st_thoigiancaitien { get; set; }
             public static string? st_tinhtrangloi { get; set; }
@@ -33,12 +35,18 @@ namespace BCDAUMO.Controllers
             public static decimal st_soluong { get; set; }
             public static string? st_donvi { get; set; }
         }
+        public IActionResult PD1()
+        {
+            ViewBag.tenpage = "Xuất Line PD1";
+            return View();
+        }
 
-        public IActionResult Index()
+        public IActionResult PD2()
         {
             ViewBag.tenpage = "Xuất Line PD2";
             return View();
         }
+
         public async Task<IActionResult> CheckingOP(string id)
         {
             MyStringStorage.ten_vattuthuve = "";
@@ -49,6 +57,8 @@ namespace BCDAUMO.Controllers
             MyStringStorage.st_model = "";
             MyStringStorage.st_cell = "";
             MyStringStorage.st_station = "";
+
+            MyStringStorage.ten = "";
 
             MyStringStorage.st_thoigianphatsinhloi = "";
             MyStringStorage.st_thoigiancaitien = "";
@@ -89,32 +99,95 @@ namespace BCDAUMO.Controllers
                 MyStringStorage.st_model = model;
                 MyStringStorage.st_cell = cell;
                 MyStringStorage.st_station = station;
+                MyStringStorage.ten = ten;
+
                 return Json(new { success = true, data = dulieuvitri });
             }
         }
-        public async Task<IActionResult> CheckingVattuthuve(string vattuthuve)
+
+        public async Task<IActionResult> CheckingVattuthuve(string vattuthuve, string pd)
         {
             try
             {
+                string ten = MyStringStorage.ten;
+
                 string[] text = vattuthuve.Split(';');
-                string tenvattuthuve = text[0].Trim();
-                var dulieu = await _context.DataRules.Where(x => x.BarcodeTen == tenvattuthuve).FirstOrDefaultAsync();
-                MyStringStorage.ten_vattuthuve = dulieu.Ten.ToString();
-                MyStringStorage.ma_vattuthuve = tenvattuthuve;
-                var dulieu2 = await _context.TonKhoPas.Where(x => (x.Ten == dulieu.Ten && x.GhiChu == "2")).FirstOrDefaultAsync();
-                var laylotno = await _context.Lichsunhaptus
-                                            .Where(l => l.Tenvattu == dulieu.Ten)
-                                            .OrderByDescending(l => l.Id)
-                                            .Take(1)
-                                            .FirstOrDefaultAsync();
-                if (dulieu != null && dulieu2 != null && laylotno != null)
+
+                //add new:
+                if (text.Length <= 2)
                 {
-                    var data = new { dulieu = dulieu, dulieu2 = dulieu2, dulieu3 = laylotno };
-                    return Json(new { success = true, data = data });
+                    string tenvattuthuve = text[0].Trim();
+
+                    var dulieu = await _context.DataRules.Where(x => x.Ten == tenvattuthuve).FirstOrDefaultAsync();
+                    if (ten == dulieu.Ten.ToString())
+                    {
+                        MyStringStorage.ten_vattuthuve = dulieu.Ten.ToString();
+                        MyStringStorage.ma_vattuthuve = tenvattuthuve;
+                        var dulieu2 = await _context.TonKhoPas.Where(x => (x.Ten == dulieu.Ten && x.GhiChu == pd)).FirstOrDefaultAsync();
+                        var laylotno = await _context.Lichsunhaptus
+                                                    .Where(l => l.Tenvattu == dulieu.Ten)
+                                                    .OrderByDescending(l => l.Id)
+                                                    .Take(1)
+                                                    .FirstOrDefaultAsync();
+                        if (dulieu != null && dulieu2 != null && laylotno != null)
+                        {
+                            var data = new { dulieu = dulieu, dulieu2 = dulieu2, dulieu3 = laylotno };
+                            return Json(new { success = true, data = data });
+                        }
+                        else
+                        {
+                            return Json(new { success = false });
+                        }
+                    }
+                    else
+                    {
+                        return Json(new { success = false });
+                    }
                 }
                 else
                 {
-                    return Json(new { success = false });
+                    string ten1 = ten;
+                    if (ten == "EM D110")
+                    {
+                        ten1 = "EM-D110";
+                    }
+                    else if (ten == "Mo G-573")
+                    {
+                        ten1 = "G573";
+                    }
+                    else if (ten == "Mo 8080")
+                    {
+                        ten1 = "G8080";
+                    }
+                    else if (ten == "HP300")
+                    {
+                        ten1 = "HP 300";
+                    }
+                    if (ten1.Contains(text[3]))
+                    {
+                        MyStringStorage.ten_vattuthuve = ten1;
+                        var dulieu = await _context.DataRules.Where(x => x.Ten == ten).FirstOrDefaultAsync();
+                        MyStringStorage.ma_vattuthuve = "";
+                        var dulieu2 = await _context.TonKhoPas.Where(x => (x.Ten == ten && x.GhiChu == pd)).FirstOrDefaultAsync();
+                        var laylotno = await _context.Lichsunhaptus
+                                                    .Where(l => l.Tenvattu == ten)
+                                                    .OrderByDescending(l => l.Id)
+                                                    .Take(1)
+                                                    .FirstOrDefaultAsync();
+                        if (dulieu != null && dulieu2 != null && laylotno != null)
+                        {
+                            var data = new { dulieu = dulieu, dulieu2 = dulieu2, dulieu3 = laylotno };
+                            return Json(new { success = true, data = data });
+                        }
+                        else
+                        {
+                            return Json(new { success = false });
+                        }
+                    }
+                    else
+                    {
+                        return Json(new { success = false });
+                    }
                 }
             }
             catch
@@ -184,6 +257,8 @@ namespace BCDAUMO.Controllers
         {
             try
             {
+                string ten = MyStringStorage.ten;
+
                 if (string.IsNullOrEmpty(cell)) { cell = ""; }
                 if (string.IsNullOrEmpty(station)) { station = ""; }
 
@@ -193,62 +268,143 @@ namespace BCDAUMO.Controllers
                 string ten_vattuthuve = MyStringStorage.ten_vattuthuve;
                 string ma_vattuthuve = MyStringStorage.ma_vattuthuve;
 
-                if (ma_vattuthuve != ma_vattuphatra) //TRƯỜNG HỢP NG
+                if (text.Length <= 2)
                 {
-                    //Cập nhật bảng layout
-                    var rowToUpdate = _context.Layouts.FirstOrDefault(s => (s.Model == model && (s.Cell == cell || string.IsNullOrEmpty(s.Cell)) && (s.Station == station || string.IsNullOrEmpty(s.Station)) && s.PhanLoai == phanloai));
-                    rowToUpdate.TrangThai = status;
-                    rowToUpdate.ThoiGianBao = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-                    _context.Entry(rowToUpdate).State = EntityState.Modified;
-                    //Thêm dữ liệu NG vào bàng Líchuxuatline
-                    Lichsuxuatline lichsuNG = new Lichsuxuatline();
-                    lichsuNG.Tenvattuthuve = ten_vattuthuve;
-                    lichsuNG.Tenvattuphatra = ma_vattuphatra;
-                    lichsuNG.Soluongxuatline = Convert.ToDecimal(0);
-                    lichsuNG.Ngayxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-                    lichsuNG.Nguoixuat = nguoixuat;
-                    lichsuNG.Donvi = "";
-                    lichsuNG.Tontu = Convert.ToDecimal(0);
-                    lichsuNG.Vitri = vitri;
-                    lichsuNG.Result = "NG";
-                    lichsuNG.Lotno = "";
-                    lichsuNG.Ghichu = "";
-                    await _context.AddAsync(lichsuNG);
-                    await _context.SaveChangesAsync();
-                    var ketqua = new { mode = "NG", updatelayout = rowToUpdate, addLichsuxuatline = lichsuNG };
-                    return Json(new { success = true, data = ketqua });
-
-                }
-                else //TRƯỜNG HỢP OK
-                {
-                    MyStringStorage.st_damnhiem = nguoixuat;
-                    MyStringStorage.st_soluong = soluongxuatline;
-                    MyStringStorage.st_donvi = donvi;
-                    var dulieu = await _context.DataRules.Where(x => x.BarcodeTen == ma_vattuphatra).FirstOrDefaultAsync();
-                    MyStringStorage.ten_vattuphatra = dulieu.Ten.ToString();
-                    MyStringStorage.ma_vattuphatra = ma_vattuphatra;
-                    if (dulieu != null)
+                    if (ma_vattuthuve != ma_vattuphatra) //TRƯỜNG HỢP NG
                     {
-                        Lichsuxuatline lichsuOK = new Lichsuxuatline();
-                        lichsuOK.Tenvattuthuve = ten_vattuthuve;
-                        lichsuOK.Tenvattuphatra = MyStringStorage.ten_vattuphatra;
-                        lichsuOK.Soluongxuatline = soluongxuatline;
-                        lichsuOK.Ngayxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-                        lichsuOK.Nguoixuat = nguoixuat;
-                        lichsuOK.Donvi = donvi;
-                        lichsuOK.Tontu = tontu;
-                        lichsuOK.Vitri = vitri;
-                        lichsuOK.Result = "OK";
-                        lichsuOK.Lotno = lotno;
-                        lichsuOK.Ghichu = "";
-                        await _context.AddAsync(lichsuOK);
+                        //Cập nhật bảng layout
+                        var rowToUpdate = _context.Layouts.FirstOrDefault(s => (s.Model == model && (s.Cell == cell || string.IsNullOrEmpty(s.Cell)) && (s.Station == station || string.IsNullOrEmpty(s.Station)) && s.PhanLoai == phanloai));
+                        rowToUpdate.TrangThai = status;
+                        rowToUpdate.ThoiGianBao = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+                        _context.Entry(rowToUpdate).State = EntityState.Modified;
+                        //Thêm dữ liệu NG vào bàng Líchuxuatline
+                        Lichsuxuatline lichsuNG = new Lichsuxuatline();
+                        lichsuNG.Tenvattuthuve = ten_vattuthuve;
+                        lichsuNG.Tenvattuphatra = ma_vattuphatra;
+                        lichsuNG.Soluongxuatline = Convert.ToDecimal(0);
+                        lichsuNG.Ngayxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+                        lichsuNG.Nguoixuat = nguoixuat;
+                        lichsuNG.Donvi = "";
+                        lichsuNG.Tontu = Convert.ToDecimal(0);
+                        lichsuNG.Vitri = vitri;
+                        lichsuNG.Result = "NG";
+                        lichsuNG.Lotno = "";
+                        lichsuNG.Ghichu = "";
+                        await _context.AddAsync(lichsuNG);
                         await _context.SaveChangesAsync();
-                        var ketqua = new { mode = "OK", dulieu = dulieu, dulieuluuOK = lichsuOK };
+                        var ketqua = new { mode = "NG", updatelayout = rowToUpdate, addLichsuxuatline = lichsuNG };
                         return Json(new { success = true, data = ketqua });
+
+                    }
+                    else //TRƯỜNG HỢP OK
+                    {
+                        MyStringStorage.st_damnhiem = nguoixuat;
+                        MyStringStorage.st_soluong = soluongxuatline;
+                        MyStringStorage.st_donvi = donvi;
+                        var dulieu = await _context.DataRules.Where(x => x.BarcodeTen == ma_vattuphatra).FirstOrDefaultAsync();
+                        MyStringStorage.ten_vattuphatra = dulieu.Ten.ToString();
+                        MyStringStorage.ma_vattuphatra = ma_vattuphatra;
+                        if (dulieu != null)
+                        {
+                            Lichsuxuatline lichsuOK = new Lichsuxuatline();
+                            lichsuOK.Tenvattuthuve = ten_vattuthuve;
+                            lichsuOK.Tenvattuphatra = MyStringStorage.ten_vattuphatra;
+                            lichsuOK.Soluongxuatline = soluongxuatline;
+                            lichsuOK.Ngayxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+                            lichsuOK.Nguoixuat = nguoixuat;
+                            lichsuOK.Donvi = donvi;
+                            lichsuOK.Tontu = tontu;
+                            lichsuOK.Vitri = vitri;
+                            lichsuOK.Result = "OK";
+                            lichsuOK.Lotno = lotno;
+                            lichsuOK.Ghichu = "";
+                            await _context.AddAsync(lichsuOK);
+                            await _context.SaveChangesAsync();
+                            var ketqua = new { mode = "OK", dulieu = dulieu, dulieuluuOK = lichsuOK };
+                            return Json(new { success = true, data = ketqua });
+                        }
+                        else
+                        {
+                            return Json(new { success = false });
+                        }
+                    }
+                }
+                else
+                {
+                    string ten1 = ten;
+                    if (ten == "EM D110")
+                    {
+                        ten1 = "EM-D110";
+                    }
+                    else if (ten == "Mo G-573")
+                    {
+                        ten1 = "G573";
+                    }
+                    else if (ten == "Mo 8080")
+                    {
+                        ten1 = "G8080";
+                    }
+                    else if (ten == "HP300")
+                    {
+                        ten1 = "HP 300";
+                    }
+
+                    if (ten1.Contains(text[3]) && text[3] == ten_vattuthuve)
+                    {
+                        MyStringStorage.st_damnhiem = nguoixuat;
+                        MyStringStorage.st_soluong = soluongxuatline;
+                        MyStringStorage.st_donvi = donvi;
+                        var dulieu = await _context.DataRules.Where(x => x.Ten == ten).FirstOrDefaultAsync();
+                        MyStringStorage.ten_vattuphatra = dulieu.Ten.ToString();
+                        MyStringStorage.ma_vattuphatra = "";
+                        if (dulieu != null)
+                        {
+                            Lichsuxuatline lichsuOK = new Lichsuxuatline();
+                            lichsuOK.Tenvattuthuve = ten_vattuthuve;
+                            lichsuOK.Tenvattuphatra = MyStringStorage.ten_vattuphatra;
+                            lichsuOK.Soluongxuatline = soluongxuatline;
+                            lichsuOK.Ngayxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+                            lichsuOK.Nguoixuat = nguoixuat;
+                            lichsuOK.Donvi = donvi;
+                            lichsuOK.Tontu = tontu;
+                            lichsuOK.Vitri = vitri;
+                            lichsuOK.Result = "OK";
+                            lichsuOK.Lotno = lotno;
+                            lichsuOK.Ghichu = "";
+                            await _context.AddAsync(lichsuOK);
+                            await _context.SaveChangesAsync();
+                            var ketqua = new { mode = "OK", dulieu = dulieu, dulieuluuOK = lichsuOK };
+                            return Json(new { success = true, data = ketqua });
+                        }
+                        else
+                        {
+                            return Json(new { success = false });
+                        }
                     }
                     else
                     {
-                        return Json(new { success = false });
+                        //Cập nhật bảng layout
+                        var rowToUpdate = _context.Layouts.FirstOrDefault(s => (s.Model == model && (s.Cell == cell || string.IsNullOrEmpty(s.Cell)) && (s.Station == station || string.IsNullOrEmpty(s.Station)) && s.PhanLoai == phanloai));
+                        rowToUpdate.TrangThai = status;
+                        rowToUpdate.ThoiGianBao = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+                        _context.Entry(rowToUpdate).State = EntityState.Modified;
+                        //Thêm dữ liệu NG vào bàng Líchuxuatline
+                        Lichsuxuatline lichsuNG = new Lichsuxuatline();
+                        lichsuNG.Tenvattuthuve = ten_vattuthuve;
+                        lichsuNG.Tenvattuphatra = "";
+                        lichsuNG.Soluongxuatline = Convert.ToDecimal(0);
+                        lichsuNG.Ngayxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+                        lichsuNG.Nguoixuat = nguoixuat;
+                        lichsuNG.Donvi = "";
+                        lichsuNG.Tontu = Convert.ToDecimal(0);
+                        lichsuNG.Vitri = vitri;
+                        lichsuNG.Result = "NG";
+                        lichsuNG.Lotno = "";
+                        lichsuNG.Ghichu = "";
+                        await _context.AddAsync(lichsuNG);
+                        await _context.SaveChangesAsync();
+                        var ketqua = new { mode = "NG", updatelayout = rowToUpdate, addLichsuxuatline = lichsuNG };
+                        return Json(new { success = true, data = ketqua });
                     }
                 }
             }
@@ -308,11 +464,11 @@ namespace BCDAUMO.Controllers
                     await _context.SaveChangesAsync();
                 }
                 TempData["success"] = 1;
-                return RedirectToAction("Index");
+                return Json(new { success = true });
             }
             catch
             {
-                throw new Exception();
+                return Json(new { success = false });
             }
         }
 
