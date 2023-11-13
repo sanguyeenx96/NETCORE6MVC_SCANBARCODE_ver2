@@ -5,7 +5,7 @@ $(document).ready(function () {
     var qmnv = new Audio("/audio/quetmanhanvien.wav");
     var loiketnoi = new Audio("/audio/loiketnoi.wav");
 
-    var stringpd = "2";
+    var stringpd = "1";
 
     qmnv.play();
 

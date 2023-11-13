@@ -24,6 +24,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=XuatLine}/{action=Index}/{id?}");
+    pattern: "{controller=XuatLine}/{action=PD1}/{id?}");
 
 app.Run();
