@@ -75,8 +75,10 @@ namespace BCDAUMO.Controllers
                 return Json(new { success = false });
             }
             string tenOP = nguoithaotac.Name;
+            MyStringStorage.st_damnhiem = tenOP;
             return Json(new { success = true, data = tenOP });
         }
+
         public async Task<IActionResult> CheckingVitri(string vitri)
         {
             string[] text = vitri.Split(';');
@@ -232,7 +234,7 @@ namespace BCDAUMO.Controllers
                 lichsu.Tenvattuphatra = tenvattuphatra;
                 lichsu.Soluongxuatline = Convert.ToDecimal(soluongxuatline);
                 lichsu.Ngayxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-                lichsu.Nguoixuat = nguoixuat;
+                lichsu.Nguoixuat = MyStringStorage.st_damnhiem;
                 lichsu.Donvi = donvi;
                 lichsu.Tontu = Convert.ToDecimal(tontu);
                 lichsu.Vitri = vitri;
@@ -283,7 +285,7 @@ namespace BCDAUMO.Controllers
                         lichsuNG.Tenvattuphatra = ma_vattuphatra;
                         lichsuNG.Soluongxuatline = Convert.ToDecimal(0);
                         lichsuNG.Ngayxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-                        lichsuNG.Nguoixuat = nguoixuat;
+                        lichsuNG.Nguoixuat = MyStringStorage.st_damnhiem;
                         lichsuNG.Donvi = "";
                         lichsuNG.Tontu = Convert.ToDecimal(0);
                         lichsuNG.Vitri = vitri;
@@ -298,7 +300,7 @@ namespace BCDAUMO.Controllers
                     }
                     else //TRƯỜNG HỢP OK
                     {
-                        MyStringStorage.st_damnhiem = nguoixuat;
+
                         MyStringStorage.st_soluong = soluongxuatline;
                         MyStringStorage.st_donvi = donvi;
                         var dulieu = await _context.DataRules.Where(x => x.BarcodeTen == ma_vattuphatra).FirstOrDefaultAsync();
@@ -311,7 +313,7 @@ namespace BCDAUMO.Controllers
                             lichsuOK.Tenvattuphatra = MyStringStorage.ten_vattuphatra;
                             lichsuOK.Soluongxuatline = soluongxuatline;
                             lichsuOK.Ngayxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-                            lichsuOK.Nguoixuat = nguoixuat;
+                            lichsuOK.Nguoixuat = MyStringStorage.st_damnhiem;
                             lichsuOK.Donvi = donvi;
                             lichsuOK.Tontu = tontu;
                             lichsuOK.Vitri = vitri;
@@ -351,7 +353,6 @@ namespace BCDAUMO.Controllers
 
                     if (ten1.Contains(text[3]) && text[3] == ten_vattuthuve)
                     {
-                        MyStringStorage.st_damnhiem = nguoixuat;
                         MyStringStorage.st_soluong = soluongxuatline;
                         MyStringStorage.st_donvi = donvi;
                         var dulieu = await _context.DataRules.Where(x => x.Ten == ten).FirstOrDefaultAsync();
@@ -364,7 +365,7 @@ namespace BCDAUMO.Controllers
                             lichsuOK.Tenvattuphatra = MyStringStorage.ten_vattuphatra;
                             lichsuOK.Soluongxuatline = soluongxuatline;
                             lichsuOK.Ngayxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-                            lichsuOK.Nguoixuat = nguoixuat;
+                            lichsuOK.Nguoixuat = MyStringStorage.st_damnhiem;
                             lichsuOK.Donvi = donvi;
                             lichsuOK.Tontu = tontu;
                             lichsuOK.Vitri = vitri;
@@ -394,7 +395,7 @@ namespace BCDAUMO.Controllers
                         lichsuNG.Tenvattuphatra = "";
                         lichsuNG.Soluongxuatline = Convert.ToDecimal(0);
                         lichsuNG.Ngayxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-                        lichsuNG.Nguoixuat = nguoixuat;
+                        lichsuNG.Nguoixuat = MyStringStorage.st_damnhiem;
                         lichsuNG.Donvi = "";
                         lichsuNG.Tontu = Convert.ToDecimal(0);
                         lichsuNG.Vitri = vitri;
